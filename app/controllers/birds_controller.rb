@@ -1,5 +1,4 @@
 class BirdsController < ApplicationController
-
   # GET /birds
   def index
     birds = Bird.all
@@ -18,14 +17,36 @@ class BirdsController < ApplicationController
     if bird
       render json: bird
     else
-      render json: { error: "Bird not found" }, status: :not_found
+      render json: { error: 'bird not found' }, status: :not_found
+    end
+  end
+
+  # UPDATE /birds/:id
+  def update
+    bird = Bird.find_by(id: params[:id])
+    if bird
+      bird.update(bird_params)
+      render json: bird, status: :accepted
+    else
+      render json: { error: 'bird not found' }, status: :not_found
+    end
+  end
+
+  # UPDATE /birds/:id/like (custom route)
+
+  def increment_likes
+    bird = Bird.find_by(id: params[:id])
+    if bird
+      bird.update(likes: bird.likes + 1)
+      render json: bird, status: :accepted
+    else
+      render json: { error: 'bird not found' }, status: :not_found
     end
   end
 
   private
 
   def bird_params
-    params.permit(:name, :species)
+    params.permit(:name, :species, :likes)
   end
-
 end
